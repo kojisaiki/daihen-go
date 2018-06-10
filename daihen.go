@@ -39,12 +39,12 @@ func prepareEnv() (DaihenConfiguration, bool) {
 	password := os.Getenv("DAIHEN_PROXY_PASS")
 
 	if receivePort == "" || proxyHost == "" || proxyPort == "" || username == "" || password == "" {
-		fmt.Println("Require following environment variables:")
-		fmt.Println("- DAIHEN_RECEIVE_PORT:Daihen listen this port.")
-		fmt.Println("- DAIHEN_PROXY_HOST:Daihen bypass request to this hostname.")
-		fmt.Println("- DAIHEN_PROXY_PORT:Daihen bypass request to this port.")
-		fmt.Println("- DAIHEN_PROXY_USER:Basic authentication username for proxy.")
-		fmt.Println("- DAIHEN_PROXY_PASS:Basic authentication password for proxy.")
+		fmt.Println(`Require following environment variables:
+  - DAIHEN_RECEIVE_PORT:Daihen listen this port.
+  - DAIHEN_PROXY_HOST:Daihen bypass request to this hostname.
+  - DAIHEN_PROXY_PORT:Daihen bypass request to this port.
+  - DAIHEN_PROXY_USER:Basic authentication username for proxy.
+  - DAIHEN_PROXY_PASS:Basic authentication password for proxy.`)
 		return DaihenConfiguration{}, false
 	}
 
