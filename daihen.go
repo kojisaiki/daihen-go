@@ -51,11 +51,11 @@ func prepareEnv() (DaihenConfiguration, bool) {
 	config := DaihenConfiguration{}
 	_receivePort, _ := strconv.ParseUint(receivePort, 10, 16)
 	config.receivePort = uint16(_receivePort)
-	config.proxyHost = os.Getenv("DAIHEN_PROXY_HOST")
+	config.proxyHost = proxyHost
 	_proxyPort, _ := strconv.ParseUint(proxyPort, 10, 16)
 	config.proxyPort = uint16(_proxyPort)
-	config.username = os.Getenv("DAIHEN_PROXY_USER")
-	config.password = os.Getenv("DAIHEN_PASSWORD")
+	config.username = username
+	config.password = password
 	return config, true
 }
 
