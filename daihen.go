@@ -78,6 +78,7 @@ func daihen() {
 		return r, nil
 	})
 
+	fmt.Printf("serve on:%d¥n", config.receivePort)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.receivePort), proxy))
 }
 

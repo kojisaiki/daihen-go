@@ -2,8 +2,15 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"net/url"
 	"os"
 	"testing"
+	"time"
+
+	"github.com/elazarl/goproxy"
 )
 
 func TestPrepareEnv(t *testing.T) {
@@ -74,11 +81,34 @@ func TestPrepareEnv(t *testing.T) {
 
 func TestDaihen(t *testing.T) {
 
-	os.Setenv("DAIHEN_RECEIVE_PORT", string(8080))
+	// setup dummy end proxy
+	proxymock := goproxy.NewProxyHttpServer()
+	proxymock.Verbose = true
+	go http.ListenAndServe(":8081", proxymock)
+
+	// setup subject
+	os.Setenv("DAIHEN_RECEIVE_PORT", "8080")
 	os.Setenv("DAIHEN_PROXY_HOST", "localhost")
-	os.Setenv("DAIHEN_PROXY_PORT", string(8081))
+	os.Setenv("DAIHEN_PROXY_PORT", "8081")
 	os.Setenv("DAIHEN_PROXY_USER", "foo")
 	os.Setenv("DAIHEN_PROXY_PASS", "bar")
-
 	go daihen()
+
+	time.Sleep(1 * time.Second)
+
+	// fire a http request: client --> subject proxy(daihen) --> end proxy --> internet
+	proxyUrl, _ := url.Parse("http://localhost:8080")
+	client := &http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxyUrl)}}
+	rsp, err := client.Get("https://golang.org/doc/tos.html")
+	if err != nil {
+		log.Fatalf("get rsp failed:%v", err)
+		t.Fail()
+	}
+	defer rsp.Body.Close()
+	data, _ := ioutil.ReadAll(rsp.Body)
+	if rsp.StatusCode != http.StatusOK {
+		log.Fatalf("status %d, data %s", rsp.StatusCode, data)
+		t.Fail()
+	}
+	log.Printf("rsp:%s", data)
 }
